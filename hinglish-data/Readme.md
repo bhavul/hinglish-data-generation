@@ -1,0 +1,1 @@
+This is where the data resides. Currently it is stored in a single `data.txt` file.

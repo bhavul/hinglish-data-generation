@@ -1,0 +1,29 @@
+# docker-compose.yml
+version: "3"
+
+services:
+  hinglish-consumer:
+    build: ./hinglish-consumer
+    environment:
+      KAFKA_BROKER_URL: broker:9092
+      TWEETS_QUEUE_TOPIC: queueing.tweets
+      DB_FILE: /var/log/hinglish-data/data.txt
+    volumes:
+      - ./hinglish-data:/var/log/hinglish-data
+
+  tweets-producer:
+    build: ./tweets-producer
+    environment:
+      KAFKA_BROKER_URL: broker:9092
+      TWEETS_QUEUE_TOPIC: queueing.tweets
+      # Twitter credentials are loaded from .env file. Check .env.example file to understand.
+      TWITTER_AUTH_CONSUMER_KEY: ${TWITTER_AUTH_CONSUMER_KEY}
+      TWITTER_AUTH_CONSUMER_SECRET: ${TWITTER_AUTH_CONSUMER_SECRET}
+      TWITTER_AUTH_ACCESS_TOKEN: ${TWITTER_AUTH_ACCESS_TOKEN}
+      TWITTER_AUTH_ACCESS_TOKEN_SECRET: ${TWITTER_AUTH_ACCESS_TOKEN_SECRET}
+
+# Give this composition access to the Kafka network
+networks:
+  default:
+    external:
+      name: kafka-network
