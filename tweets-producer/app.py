@@ -9,26 +9,35 @@ TWITTER_CONSUMER_KEY = os.environ.get("TWITTER_AUTH_CONSUMER_KEY")
 TWITTER_CONSUMER_SECRET = os.environ.get("TWITTER_AUTH_CONSUMER_SECRET")
 TWITTER_AUTH_ACCESS_TOKEN = os.environ.get("TWITTER_AUTH_ACCESS_TOKEN")
 TWITTER_AUTH_ACCESS_TOKEN_SECRET = os.environ.get("TWITTER_AUTH_ACCESS_TOKEN_SECRET")
+TIME_LIMIT_FOR_PRODUCER = os.environ.get("PRODUCER_TIME_LIMIT")
+CLOSE_MESSAGE = os.environ.get("SPECIAL_CLOSE_FLAG")
 count_tweets = 0
 
 
 # override tweepy.StreamListener to add logic to on_status
 class MyTwitterStreamListener(tweepy.StreamListener):
 
-    def __init__(self, time_limit=600):
+    def __init__(self, time_limit=None):
         self.start_time = time.time()
-        self.limit = time_limit
+        self.limit = int(time_limit) if time_limit else None
         super().__init__()
 
     def on_status(self, status):
         global count_tweets
         # print(status.text)
-        if (time.time() - self.start_time) < self.limit:
+        if self.limit:
+            if (time.time() - self.start_time) < self.limit:
+                producer.send(TWEETS_QUEUE_TOPIC, value=status.text.encode())
+                return True
+            else:
+                producer.send(TWEETS_QUEUE_TOPIC, value=CLOSE_MESSAGE.encode())
+                print(f'Time limit done, exiting streaming!')
+                return False
+        else:
+            # endlessly keep producing
             producer.send(TWEETS_QUEUE_TOPIC, value=status.text.encode())
             return True
-        else:
-            print(f'Time limit done, exiting streaming!')
-            return False
+
 
     def on_error(self, status_code):
         if status_code == 420:
@@ -52,7 +61,7 @@ if __name__ == "__main__":
                      wait_on_rate_limit_notify=True)
 
     # initialise twitter stream connection
-    myStreamListener = MyTwitterStreamListener()
+    myStreamListener = MyTwitterStreamListener(time_limit=TIME_LIMIT_FOR_PRODUCER)
 
     myStream = tweepy.Stream(auth=api.auth, listener=myStreamListener)
     # starting a stream

@@ -7,7 +7,8 @@ services:
     environment:
       KAFKA_BROKER_URL: broker:9092
       TWEETS_QUEUE_TOPIC: queueing.tweets
-      DB_FILE: /var/log/hinglish-data/data.txt
+      DB_FILE: /var/log/hinglish-data/data.csv
+      SPECIAL_CLOSE_FLAG: Dave, my mind is going...
     volumes:
       - ./hinglish-data:/var/log/hinglish-data
 
@@ -16,6 +17,8 @@ services:
     environment:
       KAFKA_BROKER_URL: broker:9092
       TWEETS_QUEUE_TOPIC: queueing.tweets
+      SPECIAL_CLOSE_FLAG: Dave, my mind is going...
+      PRODUCER_TIME_LIMIT: ${PRODUCER_TIME_LIMIT}
       # Twitter credentials are loaded from .env file. Check .env.example file to understand.
       TWITTER_AUTH_CONSUMER_KEY: ${TWITTER_AUTH_CONSUMER_KEY}
       TWITTER_AUTH_CONSUMER_SECRET: ${TWITTER_AUTH_CONSUMER_SECRET}

@@ -60,3 +60,8 @@ So it's important to note down all learnings.
 - In `volumes:` you can give host's relative path. This is always relative to the docker-compose.xml file.
 - For any kind of secrets don't expose them in `docker-compose.xml` directly as environment config variables. Rather use **docker secrets**. [More here](https://medium.com/lucjuggery/from-env-variables-to-docker-secrets-bc8802cacdfd). However this requires your docker containers to not be container but rather docker services and run in a swarm which can then be scaled. Secrets are automatically then given to containers in a swarm.
 - A simpler way is you can keep a `.env` file which can be added to `.gitignore` and can be different in your prod versus dev environments. Here you can define your secrets. This way your secrets dont get exposed in Git repo.
+
+
+## Python
+
+- Use a csv writer for writing a csv. Default python f.writelines() actually does not write lines on separate lines. You need to use a `\n` at the end of each of your elements in your list of lines.

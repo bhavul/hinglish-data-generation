@@ -20,7 +20,7 @@ docker-compose -f docker-compose.kafka.yml up -d
 docker-compose up -d
 ```
 
-Currently the producer runs only for 10 minutes and then exits. You can easily remove this time limit (check `tweets-producer/app.py`). In initial testing, this generates close to 30-100 hinglish tweets within 10 minutes. 
+Currently the producer runs only for 10 minutes and then exits. You can easily remove this time limit (by commenting `PRODUCER_TIME_LIMIT` flag in your `.env`). In initial testing, this generates close to 30-60 hinglish tweets within 5 minutes. 
  
 
 ## Check logs
