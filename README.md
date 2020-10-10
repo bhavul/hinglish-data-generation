@@ -45,10 +45,12 @@ For tweet consumer :
 
 # What we're doing here
 
-We use Tweepy client to use Twitter Streaming API and stream tweets. These tweets go into Kafka queue. Then a consumer processes them to put them in a database.
+We use Tweepy client to use Twitter Streaming API and stream tweets. These are all kinds of tweets belonging to any language. These tweets go into Kafka queue/topic (named `queuing.tweets`). Then a consumer processes them to put the ones which are hinglish tweets in a file.
 
-Twitter Streaming API allows you to get tweets based on search keywords.
-The default access level allows up to 400 search (track) keywords. So, we've actually given a list of 400 most commonly used hinglish keywords. These were obtained by doing a basic data analysis
+Twitter Streaming API allows you to get tweets either based on search keywords OR to get a 1% sample of tweets. The former has a limitation of 400 search keywords and just 500,000 tweets a month for a non-enterprise Twitter Developer account. The latter does not have this limitation.
+
+For this reason we're using streaming sample API of twitter - which usually gives us a lot of junk and only one or two hinglish tweets in every 1000 tweets that get put into the queue/topic. 
+
 
 ## Upcoming features (tentative)
 
