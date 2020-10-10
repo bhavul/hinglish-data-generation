@@ -13,11 +13,17 @@ http://docs.tweepy.org/en/v3.4.0/streaming_how_to.html
 Do note that to run this you first need a Twitter Developer account and set up an App there and get the credentials. These credentials then go in a `.env` file (check `.env.example`). 
 
 ```
-# 1. Start kafka & zookeeper
+# 0. Clone this repository
+git clone https://github.com/bhavul/hinglish-data-generation.git
+
+# 1. Set up a docker network so Kafka and Producers/consumers can communicate
+docker network create kafka-network
+
+# 2. Start kafka & zookeeper
 docker-compose -f docker-compose.kafka.yml up -d
 
-# 2. Start tweets producer and consumer service
-docker-compose up -d
+# 3. Start tweets producer and consumer service
+docker-compose up --build -d
 ```
 
 Currently the producer runs only for 10 minutes and then exits. You can easily remove this time limit (by commenting `PRODUCER_TIME_LIMIT` flag in your `.env`). In initial testing, this generates close to 30-60 hinglish tweets within 5 minutes. 
@@ -29,7 +35,7 @@ For kafka...
 
 `docker-compose -f docker-compose.kafka.yml logs broker`  
 
-To check kafka queues :   
+To check kafka queues (every single tweet) :   
 
 `docker-compose -f docker-compose.kafka.yml exec broker kafka-console-consumer --bootstrap-server localhost:9092 --topic queueing.tweets --from-beginning
 `  
@@ -54,7 +60,8 @@ For this reason we're using streaming sample API of twitter - which usually give
 
 ## Upcoming features (tentative)
 
-1. Basic system to put new hinglish tweets in some DB instead of a file.
+0. Better hinglish detection + Setup small retention period for Kafka queue
+1. Basic system to put new hinglish tweets in some DB instead of a file. 
 2. Better classification system for consumer to only store cleaned and good tweets.
 3. Separation of producer and consumer to do independent scaling
 4. Trying to setup Kafka cluster instead of single kafka 
